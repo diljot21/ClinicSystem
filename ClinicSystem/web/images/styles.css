@@ -1,0 +1,38 @@
+
+
+form {
+    display: inline-block;
+}
+
+title {
+    color: white;
+}
+
+html{
+    background-color: lavender;
+}
+
+
+/*.image{*/
+
+/*    !* Center and scale the image nicely *!*/
+/*    background-position: center;*/
+/*    background-repeat: no-repeat;*/
+/*    background-size: cover;*/
+/*}*/
+
+.form {
+
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+.btn:hover {
+    opacity: 1;
+}
+
+
+
