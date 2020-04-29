@@ -29,7 +29,7 @@ public class DBConnection {
         return conn;
     }
 
-    public static void closeJDBCObjects(Connection conn, Statement stmt, ResultSet rs) {
+    public void closeJDBCObjects(Connection conn, Statement stmt, ResultSet rs) {
         try {
             if (rs != null) {
                 rs.close();
@@ -46,7 +46,7 @@ public class DBConnection {
         }
     }
 
-    public static void closeJDBCObjects(Connection conn, Statement stmt) {
+    public void closeJDBCObjects(Connection conn, Statement stmt) {
         closeJDBCObjects(conn, stmt, null);
     }
 }

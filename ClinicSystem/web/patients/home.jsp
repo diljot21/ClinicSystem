@@ -11,10 +11,6 @@
 
 <!DOCTYPE html>
 <html>
-
-
-
-
     <head>
         <script type="text/javascript">
             var isLoggedIn = "<%= session.getAttribute("isLoggedIn")%>";
@@ -30,13 +26,8 @@
         <link rel="stylesheet" type="text/css" href="styles.css"/>
     </head>
     <body>
-
-        <jsp:include page="header.jsp"></jsp:include>
+        <jsp:include page="../common/header.jsp"></jsp:include>
             <h1>Welcome to your personal homepage!</h1>
             <h1>Hello ${sessionScope.user.getFirstName()}</h1>
-
-
-
     </body>
-
 </html>

@@ -11,18 +11,18 @@
 
 <html>
     <head>
-        <link rel="stylesheet" href="sidebar.css">
+        <link rel="stylesheet" href="../resources/css/sidebar.css">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
     </head>
     <body>
         <div id="mySidenav" class="dsidenav">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <a href="/ClinicSystem/home.jsp">Home</a>
-            <a href="/ClinicSystem/userInformation.jsp">User Information</a>
-            <a href="/ClinicSystem/appointments.jsp">Appointments</a>
-            <a href="/ClinicSystem/schedAppointment.jsp">Schedule Appointment</a>
-            <a href="/ClinicSystem/cancelAppointment.jsp">Cancel Appointment</a>
+            <a href="/ClinicSystem/patients/home.jsp">Home</a>
+            <a href="/ClinicSystem/patients/userInformation.jsp">User Information</a>
+            <a href="/ClinicSystem/patients/appointments.jsp">Appointments</a>
+            <a href="/ClinicSystem/patients/schedAppointment.jsp">Schedule Appointment</a>
+            <a href="/ClinicSystem/patients/cancelAppointment.jsp">Cancel Appointment</a>
             <form action="Logout.do" method="POST">
                 <input type="submit" name="logout" value="Logout">
             </form>

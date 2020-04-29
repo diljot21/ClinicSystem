@@ -14,6 +14,14 @@
 
     
     <head>
+        <script type="text/javascript">
+            var isLoggedIn = "<%= session.getAttribute("isLoggedIn")%>";
+            if (isLoggedIn === true)
+                window.location.href = "home.jsp";
+            } else {
+                window.location.href = "index.jsp";
+            }
+        </script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Mercury Medical Clinic</title>

@@ -5,6 +5,7 @@
  */
 package com.sheridan.controller;
 
+import com.sheridan.database.AppointmentDAO;
 import com.sheridan.model.Appointment;
 import com.sheridan.database.DBAppointment;
 import com.sheridan.database.DBConnection;
@@ -40,20 +41,19 @@ public class AppointmentController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        DBConnection DBConn = new DBConnection();
-        conn = DBConn.getConnections();
         HttpSession session = request.getSession(false);
+        
         Patient patient = (Patient) session.getAttribute("user");
-        Long ohipNumber = (Long) session.getAttribute("sesOhipNumber");
         String reasonForVisit = request.getParameter("reasonForVisit");
-        String dateTime = request.getParameter("date");
+        String dateTime = request.getParameter("datetime");
         String hour = request.getParameter("hour");
         String mins = request.getParameter("mins");
-        DBAppointment dbApp = new DBAppointment();
-        dbApp.scheduleAppointmentDB(ohipNumber, reasonForVisit, dateTime, hour, mins);
-        AppointmentList appList = new AppointmentList();
-        appointList = appList.getAppointmentList(ohipNumber, conn);
-        session.setAttribute("appointList", appointList);
+        
+        AppointmentDAO appDao = new AppointmentDAO();
+        appDao.scheduleAppointmentDB(patient.getOhipNumber(), reasonForVisit, dateTime);
+        
+        
+        session.setAttribute("appointList", appDao.getPatientAppointmentList(patient.getOhipNumber()));
         response.sendRedirect("appointments.jsp");
     }
 }

@@ -1,14 +1,13 @@
-
 package com.sheridan.model;
+
+import java.time.LocalDate;
+import java.util.Date;
 
 /**
  *
  * @author DILJOT
  */
-public class Patient{
-    private String username;
-    private String password;
-    private int role;
+public class Patient extends User{
     private long addressId;
     private String streetLine1;
     private String streetLine2;
@@ -25,35 +24,85 @@ public class Patient{
     private String lastName;
     private String middleInitials;
     private char gender;
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
 
     public Patient() {
         super();
     }
 
-    public String getUsername() {
-        return username;
+    public Patient(String username, int role, String password, 
+            long addressId, String streetLine1, String streetLine2, String aptOrUnitNumber, 
+            String city, String province, String postalCode, String type, long phoneNumber, 
+            String phoneType, long ohipNumber, String ohipVersion, String firstName, String lastName, 
+            String middleInitials, char gender, LocalDate dateOfBirth) {
+        super(username, role, password);
+        this.addressId = addressId;
+        this.streetLine1 = streetLine1;
+        this.streetLine2 = streetLine2;
+        this.aptOrUnitNumber = aptOrUnitNumber;
+        this.city = city;
+        this.province = province;
+        this.postalCode = postalCode;
+        this.type = type;
+        this.phoneNumber = phoneNumber;
+        this.phoneType = phoneType;
+        this.ohipNumber = ohipNumber;
+        this.ohipVersion = ohipVersion;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.middleInitials = middleInitials;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
     }
-
-    public void setUsername(String username) {
-        this.username = username;
+    
+    // Constructor for account registration
+    public Patient(String username, int role, String password, String streetLine1, 
+            String streetLine2, String aptOrUnitNumber, String city, String province, 
+            String postalCode, String type, long phoneNumber, String phoneType, 
+            long ohipNumber, String ohipVersion, String firstName, String lastName, 
+            String middleInitials, char gender, LocalDate dateOfBirth) {
+        super(username, role, password);
+        this.addressId = addressId;
+        this.streetLine1 = streetLine1;
+        this.streetLine2 = streetLine2;
+        this.aptOrUnitNumber = aptOrUnitNumber;
+        this.city = city;
+        this.province = province;
+        this.postalCode = postalCode;
+        this.type = type;
+        this.phoneNumber = phoneNumber;
+        this.phoneType = phoneType;
+        this.ohipNumber = ohipNumber;
+        this.ohipVersion = ohipVersion;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.middleInitials = middleInitials;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
     }
-
-    public String getPassword() {
-        return password;
+/*
+    public Patient(long addressId, String streetLine1, String streetLine2, String aptOrUnitNumber, String city, String province, String postalCode, String type, long phoneNumber, String phoneType, long ohipNumber, String ohipVersion, String firstName, String lastName, String middleInitials, char gender, LocalDate dateOfBirth, String username, int role, String password, Date dateOfLastLogin) {
+        super(username, role, password, dateOfLastLogin);
+        this.addressId = addressId;
+        this.streetLine1 = streetLine1;
+        this.streetLine2 = streetLine2;
+        this.aptOrUnitNumber = aptOrUnitNumber;
+        this.city = city;
+        this.province = province;
+        this.postalCode = postalCode;
+        this.type = type;
+        this.phoneNumber = phoneNumber;
+        this.phoneType = phoneType;
+        this.ohipNumber = ohipNumber;
+        this.ohipVersion = ohipVersion;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.middleInitials = middleInitials;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
     }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public int getRole() {
-        return role;
-    }
-
-    public void setRole(int role) {
-        this.role = role;
-    }
+  */  
+    
 
     public long getAddressId() {
         return addressId;
@@ -174,7 +223,7 @@ public class Patient{
     public void setMiddleInitials(String middleInitials) {
         this.middleInitials = middleInitials;
     }
-    
+
     public char getGender() {
         return gender;
     }
@@ -183,12 +232,17 @@ public class Patient{
         this.gender = gender;
     }
 
-    public String getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+    public void setDateOfBirth(LocalDate dateOfBirth) throws Exception {
+        LocalDate today = LocalDate.now();
+        if (dateOfBirth.isBefore(today)) {
+            this.dateOfBirth = dateOfBirth;
+        } else {
+            throw new Exception("Invalid date");
+        }
     }
-    
+
 }

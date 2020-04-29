@@ -12,7 +12,7 @@
         <title>Schedule Appointment</title>
     </head>
     <body>
-        <jsp:include page="header.jsp"></jsp:include>
+        <jsp:include page="../common/header.jsp"></jsp:include>
         <h1>Schedule Appointment</h1>
         <form action="AppointmentController" method="POST">
             <table>
@@ -29,7 +29,7 @@
                         Date
                     </td>
                     <td>
-                        <input type="date" name="date" required="">
+                        <input type="datetime-local" name="datetime" required="">
                     </td>
                 </tr>
                 <tr>

@@ -1,11 +1,14 @@
 
 package com.sheridan.model;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 /**
  *
  * @author DILJOT
  */
-public class Doctor{
+public class Doctor extends User{
 
     private int CPSO;
     private String firstName;
@@ -19,7 +22,10 @@ public class Doctor{
         
     }
 
-    public Doctor(int CPSO, String firstName, String middleInitials, String lastName, String login, int practiceAddress, String practiceName) {
+    public Doctor(String username, int role, String password, 
+            int CPSO, String firstName, String middleInitials, String lastName, 
+            String login, int practiceAddress, String practiceName) {
+        super(username, role, password);
         this.CPSO = CPSO;
         this.firstName = firstName;
         this.middleInitials = middleInitials;

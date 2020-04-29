@@ -1,8 +1,7 @@
 package com.sheridan.controller;
 
-import com.sheridan.database.DBConnection;
-import com.sheridan.model.Appointment;
-import com.sheridan.model.AppointmentList;
+import com.sheridan.database.*;
+import com.sheridan.model.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import java.io.IOException;
@@ -13,7 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * @author DILJOT
@@ -30,19 +31,13 @@ public class UserController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        boolean register;
-
-        // Connecting to the database
-        DBConnection DBConn = new DBConnection();
-        conn = DBConn.getConnections();
-
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String firstName = request.getParameter("firstName");
         String middleInitials = request.getParameter("middleInitials");
         String lastName = request.getParameter("lastName");
-        String gender = request.getParameter("gender");
-        String dateOfBirth = request.getParameter("dateOfBirth");
+        char gender = request.getParameter("gender").charAt(0);
+        LocalDate dateOfBirth = LocalDate.parse(request.getParameter("dateOfBirth"));
         String streetLine1 = request.getParameter("streetLine1");
         String streetLine2 = request.getParameter("streetLine2");
         String aptOrUnitNumber = request.getParameter("aptOrUnitNumber");
@@ -50,101 +45,32 @@ public class UserController extends HttpServlet {
         String province = request.getParameter("province");
         String postalCode = request.getParameter("postalCode");
         String type = request.getParameter("type");
-        String phoneNumber = request.getParameter("phoneNumber");
+        long phoneNumber = Long.parseLong(request.getParameter("phoneNumber"));
         String phoneType = request.getParameter("phoneType");
-        String ohipNumber = request.getParameter("ohipNumber");
+        long ohipNumber = Long.parseLong(request.getParameter("ohipNumber"));
         String ohipVersion = request.getParameter("ohipVersion");
 
         try {
-            String selectSQL = "SELECT * FROM users";
-            ps = conn.prepareStatement(selectSQL);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                String dbUsername = rs.getString("username");
-                if (dbUsername.equals(username)) {
-                    register = false;
-                    request.setAttribute("usernameTaken", "Username already taken"); // Will be available as ${message}
-                    request.getRequestDispatcher("register.jsp").forward(request, response);
-                }
+            Patient patient = new Patient(username, 2, password,
+                    streetLine1, streetLine2, aptOrUnitNumber, city, province,
+                    postalCode, type, phoneNumber, phoneType, ohipNumber, ohipVersion, firstName,
+                    lastName, middleInitials, gender, dateOfBirth);
+
+            UserDAO userDao = new UserDAO();
+
+            boolean register = userDao.checkUsernameValidity(patient.getUsername());
+
+            if (register = true) {
+                // Inserting into users table
+                userDao.addPatient(patient);
+                response.sendRedirect("index.jsp");
+            } else {
+                request.setAttribute("usernameTaken", "Username already taken"); // Will be available as ${message}
+                request.getRequestDispatcher("register.jsp").forward(request, response);
             }
-        } catch (SQLException ex) {
-            System.out.println("username!");
+        } catch (Exception ex) {
+            System.out.println("Exception User Controller");
         }
-
-        if (register = true) {
-            // Inserting into users table
-            try {
-                ps = conn.prepareStatement("INSERT INTO users (username, password, role) VALUES (?,?,?)");
-                ps.setString(1, username);
-                ps.setString(2, password);
-                ps.setString(3, "2");
-
-                ps.executeUpdate();
-            } catch (SQLException e) {
-                System.out.println("Invalid input users!");
-            }
-
-            // Inserting into addresses table
-            try {
-                ps = conn.prepareStatement("INSERT INTO addresses (streetLine1, streetLine2, aptOrUnitNumber, city, province, postalCode, type, occupant) "
-                        + "VALUES (?,?,?,?,?,?,?,?)");
-                ps.setString(1, streetLine1);
-                ps.setString(2, streetLine2);
-                ps.setString(3, aptOrUnitNumber);
-                ps.setString(4, city);
-                ps.setString(5, province);
-                ps.setString(6, postalCode);
-                ps.setString(7, type);
-                ps.setString(8, username);
-
-                ps.executeUpdate();
-
-            } catch (SQLException e) {
-                System.out.println("Invalid input addresses!");
-            }
-
-            // Inserting into phone number table
-            try {
-                ps = conn.prepareStatement("INSERT INTO phonenumbers(PhoneNumber, UserName, PhoneType) VALUES (?,?,?)");
-                ps.setString(1, phoneNumber);
-                ps.setString(2, username);
-                ps.setString(3, phoneType);
-
-                ps.executeUpdate();
-
-            } catch (SQLException e) {
-                System.out.println("Invalid input phonenumbers!");
-
-            }
-
-            //inserting into patients table
-            try {
-                ps = conn.prepareStatement("INSERT INTO patients(OHIPNumber, OHIPVersion, FirstName, MiddleInitials, LastName, Login, Gender, DateOfBirth) "
-                        + "VALUES (?,?,?,?,?,?,?,?)");
-//            INSERT INTO patients(OHIPNumber, OHIPVersion, FirstName, MiddleInitials, LastName, Login, Gender, DateOfBirth)
-//            VALUES (1234366669, "LC", "robin", NULL, "Lansiquot", "whatthefuck", "M", "1991-12-09");
-
-                ps.setString(1, ohipNumber);
-                ps.setString(2, ohipVersion);
-                ps.setString(3, firstName);
-                ps.setString(4, middleInitials);
-                ps.setString(5, lastName);
-                ps.setString(6, username);
-                ps.setString(7, gender);
-                ps.setString(8, dateOfBirth);
-
-                ps.executeUpdate();
-
-            } catch (SQLException e) {
-                System.out.println("Invalid input Patients!");
-            }
-
-            DBConnection.closeJDBCObjects(conn, ps);
-
-            response.sendRedirect("index.jsp");
-        }
-        
-        
     }
 
 }

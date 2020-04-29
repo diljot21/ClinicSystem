@@ -1,10 +1,8 @@
 package com.sheridan.controller;
 
 import com.sheridan.model.Patient;
-import com.sheridan.database.DBConnection;
-import com.sheridan.model.Appointment;
-import com.sheridan.model.AppointmentList;
-import com.sheridan.model.Doctor;
+import com.sheridan.database.*;
+import com.sheridan.model.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import java.io.IOException;
@@ -16,7 +14,9 @@ import javax.servlet.http.HttpSession;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,11 +30,8 @@ public class SystemController extends HttpServlet {
     private static Connection conn = null;
     private static PreparedStatement ps = null;
     private static ResultSet rs = null;
-    Patient patient = new Patient();
     Doctor doctor = new Doctor();
-
-    private ArrayList<Appointment> appointList = new ArrayList<>();
-    AppointmentList appList = new AppointmentList();
+    Patient patient = new Patient();
 
     @Override
     public void init() {
@@ -48,51 +45,48 @@ public class SystemController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(); // Create Session
 
-        DBConnection DBConn = new DBConnection();
-        conn = DBConn.getConnections();
+        UserDAO userDao = new UserDAO();
 
         String inputUsername = request.getParameter("username");
         String inputPassword = request.getParameter("password");
         String button = request.getParameter("login");
+
         if (button.equals("Log-in")) {
             boolean login = false;
-            try {
-                String selectSQL = "SELECT * FROM users";
-                ps = conn.prepareStatement(selectSQL);
-                rs = ps.executeQuery();
-                while (rs.next()) {
-                    String dbUsername = rs.getString("username");
-                    String dbPassword = rs.getString("password");
-                    int dbRole = Integer.parseInt(rs.getString("role"));
-                    if (dbUsername.equals(inputUsername) && dbPassword.equals(inputPassword)) {
+            User user = null;
 
-                        session.setAttribute("username", dbUsername);
-                        session.setAttribute("password", dbPassword);
-                        session.setAttribute("role", dbRole);
-                        if (dbRole == 2) {
-                            creatingPatient(dbUsername, dbPassword, dbRole, patient);
-                            session.setAttribute("user", patient);
-                        } else if (dbRole == 1) {
-                            creatingDoctor(dbUsername, doctor);
-                            session.setAttribute("user", doctor);
-                        }
-                        login = true;
-                        session.setAttribute("isLoggedIn", true);
-                        session.setAttribute("login", login);
-                    } else {
-                        session.setAttribute("isLoggedIn", false);
-                    }
-                }
+            try {
+                user = userDao.getUser(inputUsername, inputPassword);
             } catch (SQLException ex) {
-                Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(SystemController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            try {
+                if (user != null) {
+                    if (user.getRole() == 2) {
+                        PatientDAO patientDao = new PatientDAO();
+                        patient = patientDao.getPatient(user);
+                        session.setAttribute("user", patient);
+                    } else if (user.getRole() == 1) {
+                        //creatingDoctor(dbUsername, doctor);
+                        //session.setAttribute("user", doctor);
+                    }
+                    login = true;
+                    session.setAttribute("isLoggedIn", true);
+                    session.setAttribute("login", true);
+                } else {
+                    session.setAttribute("isLoggedIn", false);
+                }
+            } catch (Exception ex) {
+                System.out.println(" " + ex.getMessage());
             }
 
             if (login) {
                 creatingAppointment(session, request);
                 session.setAttribute("sesOhipNumber", patient.getOhipNumber());
-                response.sendRedirect("home.jsp");
+                response.sendRedirect("patients/home.jsp");
             } else {
 
                 session.setAttribute("message", "Invalid username or password!"); // Will be available as ${message}
@@ -127,7 +121,7 @@ public class SystemController extends HttpServlet {
 
     }
 
-    private static void creatingPatient(String dbUsername, String dbPassword, int dbRole, Patient patient) {
+    private static void creatingPatient(String dbUsername, String dbPassword, int dbRole, Patient patient) throws Exception {
         //if (dbRole == 2) {
         patient.setUsername(dbUsername);
         patient.setPassword(dbPassword);
@@ -165,7 +159,7 @@ public class SystemController extends HttpServlet {
                 patient.setMiddleInitials(rs.getString("MiddleInitials"));
                 patient.setLastName(rs.getString("LastName"));
                 patient.setGender(rs.getString("Gender").charAt(0));
-                patient.setDateOfBirth(rs.getString("DateOfBirth"));
+                patient.setDateOfBirth(LocalDate.parse(rs.getString("DateOfBirth")));
             }
 
         } catch (SQLException ex) {
@@ -174,8 +168,7 @@ public class SystemController extends HttpServlet {
     }
 
     protected void creatingAppointment(HttpSession session, HttpServletRequest request) {
-
-        appointList = appList.getAppointmentList(patient.getOhipNumber(), conn);
-        session.setAttribute("appointList", appointList);
+        AppointmentDAO appointDao = new AppointmentDAO();
+        session.setAttribute("appointList", appointDao.getPatientAppointmentList(patient.getOhipNumber()));
     }
 }
